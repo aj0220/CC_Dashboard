@@ -15,9 +15,11 @@ df = df.dropna(subset=['Card']).copy()
 
 # Ensure proper data types
 df['amount'] = pd.to_numeric(df['amount'], errors='coerce').fillna(0)
-df['Payment done'] = df['Payment done'].fillna('Pending').astype(str).str.title().str.strip()
+
+# Force everything to a string first, fill empties, then apply the logic
+df['Payment done'] = df['Payment done'].astype(str).fillna('Pending')
 df['Payment Status'] = df['Payment done'].apply(
-    lambda x: 'Paid' if x.lower() in ['na', 'yes', 'done', 'paid'] else 'Pending'
+    lambda x: 'Paid' if str(x).strip().lower() in ['na', 'yes', 'done', 'paid'] else 'Pending'
 )
 
 # --- ADD NEW BILL FORM ---
@@ -64,10 +66,13 @@ col_charts1, col_charts2 = st.columns(2)
 with col_charts1:
     st.subheader("Bill Amounts by Credit Card")
     chart_df = df[df['amount'] > 0]
-    if not chart_df.empty:
+    # FIX: Replaced "if chart_df:" with "if not chart_df.empty:"
+    if not chart_df.empty: 
         fig_bar = px.bar(chart_df, x='Card', y='amount', color='Payment Status', 
                          color_discrete_map={"Paid": "#2ecc71", "Pending": "#e74c3c"})
         st.plotly_chart(fig_bar, use_container_width=True)
+    else:
+        st.info("No active bill amounts to display.")
 
 with col_charts2:
     st.subheader("Amount Breakdown")
@@ -75,6 +80,8 @@ with col_charts2:
         fig_pie = px.pie(df, names='Payment Status', values='amount', hole=0.4,
                          color='Payment Status', color_discrete_map={"Paid": "#2ecc71", "Pending": "#e74c3c"})
         st.plotly_chart(fig_pie, use_container_width=True)
+    else:
+        st.info("No active bill amounts to display.")
 
 # --- DATA TABLE ---
 st.subheader("📝 Live Master Data")
