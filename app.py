@@ -10,6 +10,7 @@ st.title("☁️ Cloud Credit Card Bills Dashboard")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Read data from the "Bills" worksheet
+st.write("Attempting to connect...")
 df = conn.read(worksheet="Bills", ttl=5) 
 df = df.dropna(subset=['Card']).copy()
 
