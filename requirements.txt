@@ -1,0 +1,4 @@
+Streamlit
+Pandas
+plotly
+st-gsheets-connection
