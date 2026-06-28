@@ -10,11 +10,6 @@ st.title("☁️ Cloud Credit Card Bills Dashboard")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Read data from the "Bills" worksheet
-st.write("Attempting to connect...")
-st.write("--- DEBUG INFO ---")
-# Get the connection config
-config = st.connection("gsheets")._instance.gsheets_connection_config
-st.write(config)
 df = conn.read(worksheet="Bills", ttl=5) 
 df = df.dropna(subset=['Card']).copy()
 
